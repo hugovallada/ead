@@ -2,6 +2,7 @@ package com.ead.authuser.clients;
 
 import com.ead.authuser.dtos.CourseDto;
 import com.ead.authuser.dtos.ResponsePageDto;
+import com.ead.authuser.service.UtilsService;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.log4j.Log4j2;
@@ -27,18 +28,18 @@ public class UserClient {
     @Autowired
     RestTemplate restTemplate;
 
-    String REQUEST_URI = "http://localhost:8082";
+    UtilsService utilsService;
 
     public Page<CourseDto> getAllCoursesById(UUID userId, Pageable pageable) {
         List<CourseDto> searchResult = null;
 
-        String url = REQUEST_URI + "/courses?userId=" + userId + "&page=" + pageable.getPageNumber() +
-                "&size=" + pageable.getPageSize() + "&sort=" + pageable.getSort().toString().replaceAll(":", ",");
+        String url = utilsService.createUrl(userId, pageable);
 
         log.info("Request URL: {}", url);
 
         try {
-            var responseType = new ParameterizedTypeReference<ResponsePageDto<CourseDto>>() {};
+            var responseType = new ParameterizedTypeReference<ResponsePageDto<CourseDto>>() {
+            };
 
             ResponseEntity<ResponsePageDto<CourseDto>> result = restTemplate.exchange(url, HttpMethod.GET, null, responseType);
             searchResult = result.getBody().getContent();

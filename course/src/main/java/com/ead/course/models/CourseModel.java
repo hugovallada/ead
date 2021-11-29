@@ -68,4 +68,8 @@ public class CourseModel {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // qnd for consulta, ele não mostra esse campo
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "course")
     private Set<CourseUserModel> users;
+
+    public CourseUserModel convertToCourseUserModel(UUID userId) {
+        return new CourseUserModel(this, userId);
+    }
 }

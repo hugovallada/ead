@@ -15,3 +15,7 @@ spring:
     properties:
       hibernate:
         show_sql: true
+ead:
+  api:
+    url:
+      auth-user: 'http:/localhost:8087'

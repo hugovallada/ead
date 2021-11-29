@@ -34,4 +34,4 @@ eureka:
 ead:
   api:
     url:
-      course: 'http://localhost:8082'
+      course: 'http://ead-course-service'

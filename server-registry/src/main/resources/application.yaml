@@ -9,3 +9,4 @@ eureka:
   client:
     registerWithEureka: false # Não se auto registra como cliente
     fetchRegistry: false # Não busca um registro no Eureka
+    renewalPercentThreshold: 0.85 # Remove o emergency

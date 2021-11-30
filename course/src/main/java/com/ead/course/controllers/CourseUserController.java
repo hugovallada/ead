@@ -34,6 +34,12 @@ public class CourseUserController {
 
     @GetMapping
     public ResponseEntity<Page<UserDto>> getAllUsersByCourse(@PageableDefault Pageable pageable, @PathVariable UUID courseId) {
+        var courseOptional = courseService.findById(courseId);
+
+        if(courseOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
         return ResponseEntity.ok(authUserClient.getAllUsersByCourse(pageable, courseId));
     }
 

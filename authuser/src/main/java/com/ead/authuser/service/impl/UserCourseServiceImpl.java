@@ -7,6 +7,7 @@ import com.ead.authuser.service.UserCourseService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.UUID;
 
 @Service
@@ -23,5 +24,16 @@ public class UserCourseServiceImpl implements UserCourseService {
     @Override
     public UserCourseModel save(UserCourseModel userCourseModel) {
         return userCourseRepository.save(userCourseModel);
+    }
+
+    @Override
+    public boolean existsByCourseId(UUID courseId) {
+        return userCourseRepository.existsByCourseId(courseId);
+    }
+
+    @Override
+    @Transactional
+    public void deleteUserCourseByCourse(UUID courseId) {
+        userCourseRepository.deleteAllByCourseId(courseId);
     }
 }

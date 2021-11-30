@@ -1,5 +1,6 @@
 package com.ead.course.services.impl;
 
+import com.ead.course.clients.AuthUserClient;
 import com.ead.course.models.CourseModel;
 import com.ead.course.repositories.CourseRepository;
 import com.ead.course.repositories.CourseUserRepository;
@@ -28,6 +29,8 @@ public class CourseServiceImpl implements CourseService {
 
     private final CourseUserRepository courseUserRepository;
 
+    private final AuthUserClient authUserClient;
+
 //    @Override
 //    @Transactional
 //    public void delete(CourseModel courseModel) {
@@ -46,6 +49,8 @@ public class CourseServiceImpl implements CourseService {
     @Override
     @Transactional
     public void delete(CourseModel courseModel) {
+        boolean deleteCourseUserInAuthUser = false;
+
         var modules = moduleRepository.findAllByCourseCourseId(courseModel.getCourseId());
 
         if (!modules.isEmpty()) {
@@ -62,10 +67,15 @@ public class CourseServiceImpl implements CourseService {
         var courseModelList = courseUserRepository.findAllCourseUserIntoCourse(courseModel.getCourseId());
 
         if (!courseModelList.isEmpty()) {
+            deleteCourseUserInAuthUser = true;
             courseUserRepository.deleteAll(courseModelList);
         }
 
         courseRepository.delete(courseModel);
+
+        if (deleteCourseUserInAuthUser) {
+            authUserClient.deleteCourseInAuthUser(courseModel.getCourseId());
+        }
     }
 
     @Override

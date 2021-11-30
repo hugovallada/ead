@@ -56,5 +56,15 @@ public class UserCourseController {
         return ResponseEntity.status(201).body(savedUser);
     }
 
+    @DeleteMapping("/users/courses/{courseId}")
+    public ResponseEntity<Object> deleteUserCourseByCourse(@PathVariable UUID courseId) {
+        if (!userCourseService.existsByCourseId(courseId)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        userCourseService.deleteUserCourseByCourse(courseId);
+        return ResponseEntity.ok("Deletado");
+    }
+
 
 }

@@ -38,6 +38,7 @@ public class UserController {
                     Pageable pageable,
             @RequestParam(required = false) UUID courseId
     ) {
+        log.info("Get All Users");
 
         Page<UserModel> users;
 

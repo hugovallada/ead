@@ -35,6 +35,9 @@ public class UserCourseController {
             @PageableDefault Pageable pageable,
             @PathVariable UUID userId
     ) {
+        var userModelOptional = userService.findOne(userId);
+        if (userModelOptional.isEmpty())
+            return ResponseEntity.notFound().build();
 
         return ResponseEntity.ok(courseClient.getAllCoursesById(userId, pageable));
     }

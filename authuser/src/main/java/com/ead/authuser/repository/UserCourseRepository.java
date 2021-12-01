@@ -1,9 +1,11 @@
 package com.ead.authuser.repository;
 
+import com.ead.authuser.models.UserCourseModel;
 import com.ead.authuser.models.UserModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -13,4 +15,6 @@ public interface UserCourseRepository extends JpaRepository<com.ead.authuser.mod
     boolean existsByCourseId(UUID courseId);
 
     void deleteAllByCourseId(UUID courseId);
+
+    List<UserCourseModel> findAllUserCourseInCourse(UUID id);
 }

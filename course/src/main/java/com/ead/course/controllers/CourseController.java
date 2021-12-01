@@ -49,7 +49,7 @@ public class CourseController {
         if(course.isEmpty()) return ResponseEntity.notFound().build();
 
         courseService.delete(course.get());
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("Deleted");
     }
 
     @PutMapping("/{courseId}")

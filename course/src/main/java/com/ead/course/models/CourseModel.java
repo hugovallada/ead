@@ -64,12 +64,4 @@ public class CourseModel {
     @Fetch(FetchMode.SUBSELECT) // Define como os selects são feito (Select -> 1 select pro curso e 1 pra cada modulo; Join -> 1 única consulta pra pegar tudo; Subselect -> 2 consultas, 1 pra curso e 1 pra todos os módulos)
     @OnDelete(action = OnDeleteAction.CASCADE) // delega a responsabilidade para o banco, deletando todos os módulos de uma vez, com o fetch faria a deleção de 1 módulo por vez
     private Set<ModuleModel> modules; // FetchMode pode redefinir o FetchType. (JOIN -> Faz EAGER, e ignora o fetch type definido; SELECT OU SUBSELECT -> LAZY).
-
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // qnd for consulta, ele não mostra esse campo
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "course")
-    private Set<CourseUserModel> users;
-
-    public CourseUserModel convertToCourseUserModel(UUID userId) {
-        return new CourseUserModel(this, userId);
-    }
 }

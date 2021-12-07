@@ -1,11 +1,10 @@
 package com.ead.course.services.impl;
 
-import com.ead.course.clients.AuthUserClient;
 import com.ead.course.models.CourseModel;
 import com.ead.course.repositories.CourseRepository;
-import com.ead.course.repositories.CourseUserRepository;
 import com.ead.course.repositories.LessonRepository;
 import com.ead.course.repositories.ModuleRepository;
+import com.ead.course.repositories.UserRepository;
 import com.ead.course.services.CourseService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,9 +26,8 @@ public class CourseServiceImpl implements CourseService {
 
     private final LessonRepository lessonRepository;
 
-    private final CourseUserRepository courseUserRepository;
+    private final UserRepository userRepository;
 
-    private final AuthUserClient authUserClient;
 
 //    @Override
 //    @Transactional
@@ -64,18 +62,7 @@ public class CourseServiceImpl implements CourseService {
             moduleRepository.deleteAll(modules);
         }
 
-        var courseModelList = courseUserRepository.findAllCourseUserIntoCourse(courseModel.getCourseId());
-
-        if (!courseModelList.isEmpty()) {
-            deleteCourseUserInAuthUser = true;
-            courseUserRepository.deleteAll(courseModelList);
-        }
-
         courseRepository.delete(courseModel);
-
-        if (deleteCourseUserInAuthUser) {
-            authUserClient.deleteCourseInAuthUser(courseModel.getCourseId());
-        }
     }
 
     @Override

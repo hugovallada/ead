@@ -1,20 +1,14 @@
 package com.ead.course.controllers;
 
-import com.ead.course.clients.AuthUserClient;
 import com.ead.course.dtos.SubscriptionDto;
-import com.ead.course.dtos.UserDto;
-import com.ead.course.dtos.UserStatus;
 import com.ead.course.services.CourseService;
-import com.ead.course.services.CourseUserService;
+import com.ead.course.services.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpStatusCodeException;
 
 import javax.validation.Valid;
 import java.util.UUID;
@@ -26,21 +20,19 @@ import java.util.UUID;
 @AllArgsConstructor
 public class CourseUserController {
 
-    private final AuthUserClient authUserClient;
-
     private final CourseService courseService;
 
-    private final CourseUserService courseUserService;
+    private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<Page<UserDto>> getAllUsersByCourse(@PageableDefault Pageable pageable, @PathVariable UUID courseId) {
+    public ResponseEntity<Object> getAllUsersByCourse(@PageableDefault Pageable pageable, @PathVariable UUID courseId) {
         var courseOptional = courseService.findById(courseId);
 
         if(courseOptional.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok(authUserClient.getAllUsersByCourse(pageable, courseId));
+        return ResponseEntity.ok(""); // TODO
     }
 
     @PostMapping("/subscription")
@@ -52,39 +44,6 @@ public class CourseUserController {
             return ResponseEntity.status(404).body("Course not found!");
         }
 
-        if (courseUserService.existsByCourseAndUserId(course.get(), subscriptionDto.getUserId())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Already reported!");
-        }
-
-        ResponseEntity<UserDto> responseUser;
-
-        try {
-            responseUser = authUserClient.getOneUserById(subscriptionDto.getUserId());
-            if(responseUser.getBody().getUserStatus().equals(UserStatus.BLOCKED)) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("User is blocked!");
-            }
-        } catch (HttpStatusCodeException exception) {
-            if(exception.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!");
-            }
-        } catch (NullPointerException ex) {
-            return ResponseEntity.status(500).build();
-        }
-
-        var courseUserModel = courseUserService.saveAndSendSubscriptionUserInCourse(course.get().convertToCourseUserModel(subscriptionDto.getUserId()));
-
-        return ResponseEntity.status(201).body(courseUserModel);
+        return ResponseEntity.status(201).body(""); // TODO: Verificações State Transfer
     }
-
-    @DeleteMapping("/courses/users/{userId}")
-    public ResponseEntity<Object> deleteCourseUserByUser(@PathVariable UUID userId) {
-        if (!courseUserService.existsByUserId(userId)) {
-            return ResponseEntity.notFound().build();
-        }
-
-        courseUserService.deleteCourseUserByUser(userId);
-        return ResponseEntity.ok("CourseUser deleted");
-    }
-
-
 }

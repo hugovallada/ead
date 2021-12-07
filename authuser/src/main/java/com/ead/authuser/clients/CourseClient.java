@@ -54,10 +54,4 @@ public class CourseClient {
 
         return new PageImpl<>(searchResult);
     }
-
-
-    public void deleteUserInCourse(UUID id) {
-        String url = REQUEST_URI_COURSE + "/course/users/" + id;
-        restTemplate.exchange(url, HttpMethod.DELETE, null, String.class);
-    }
 }

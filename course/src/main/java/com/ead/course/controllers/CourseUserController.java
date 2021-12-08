@@ -3,6 +3,7 @@ package com.ead.course.controllers;
 import com.ead.course.dtos.SubscriptionDto;
 import com.ead.course.services.CourseService;
 import com.ead.course.services.UserService;
+import com.ead.course.specifications.SpecificationTemplate;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Pageable;
@@ -25,14 +26,16 @@ public class CourseUserController {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<Object> getAllUsersByCourse(@PageableDefault Pageable pageable, @PathVariable UUID courseId) {
+    public ResponseEntity<Object> getAllUsersByCourse(SpecificationTemplate.UserSpec spec,
+                                                      @PageableDefault Pageable pageable,
+                                                      @PathVariable UUID courseId) {
         var courseOptional = courseService.findById(courseId);
 
-        if(courseOptional.isEmpty()) {
+        if (courseOptional.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok(""); // TODO
+        return ResponseEntity.ok(userService.findAll(SpecificationTemplate.userCourseId(courseId).and(spec), pageable));
     }
 
     @PostMapping("/subscription")

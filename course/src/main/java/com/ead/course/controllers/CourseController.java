@@ -6,7 +6,6 @@ import com.ead.course.services.CourseService;
 import com.ead.course.specifications.SpecificationTemplate;
 import com.ead.course.validation.CourseValidator;
 import lombok.AllArgsConstructor;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -43,10 +42,10 @@ public class CourseController {
     }
 
     @DeleteMapping("/{courseId}")
-    public ResponseEntity<Object> deleteCourse(@PathVariable("courseId")UUID courseId) {
+    public ResponseEntity<Object> deleteCourse(@PathVariable("courseId") UUID courseId) {
         var course = courseService.findById(courseId);
 
-        if(course.isEmpty()) return ResponseEntity.notFound().build();
+        if (course.isEmpty()) return ResponseEntity.notFound().build();
 
         courseService.delete(course.get());
         return ResponseEntity.ok("Deleted");
@@ -56,7 +55,7 @@ public class CourseController {
     public ResponseEntity<Object> updateCourse(@PathVariable("courseId") UUID courseId, @RequestBody @Valid CourseDto courseDto) {
         var course = courseService.findById(courseId);
 
-        if(course.isEmpty()) return ResponseEntity.notFound().build();
+        if (course.isEmpty()) return ResponseEntity.notFound().build();
 
         var courseModel = course.get();
 
@@ -72,6 +71,11 @@ public class CourseController {
             @PageableDefault Pageable pageable,
             @RequestParam(value = "userId", required = false) UUID userId
     ) {
+        if (userId != null) {
+            return ResponseEntity.ok(courseService.findAll(pageable,
+                    SpecificationTemplate.courseUserId(userId).and(spec)));
+        }
+
         return ResponseEntity.ok(courseService.findAll(pageable, spec));
     }
 

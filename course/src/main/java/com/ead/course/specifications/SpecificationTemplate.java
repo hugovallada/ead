@@ -31,6 +31,9 @@ public class SpecificationTemplate {
     @Spec(path = "title", spec = Like.class)
     public interface LessonSpec extends Specification<LessonModel> {}
 
+    @Spec(path = "fullName", spec = Like.class)
+    public interface UserSpec extends Specification<UserModel> {}
+
     public static Specification<ModuleModel> moduleCourseId(final UUID courseId) {
         return (root, query, criteriaBuilder) -> {
             query.distinct(true);
@@ -51,6 +54,30 @@ public class SpecificationTemplate {
             Expression<Collection<LessonModel>> moduleLessons = module.get("lessons");
             return criteriaBuilder.and(
                     criteriaBuilder.equal(module.get("moduleId"), moduleId), criteriaBuilder.isMember(lesson, moduleLessons)
+            );
+        };
+    }
+
+    public static Specification<UserModel> userCourseId(final UUID courseId) {
+        return (root, query, criteriaBuilder) -> {
+            query.distinct(true);
+            Root<UserModel> user = root;
+            Root<CourseModel> course = query.from(CourseModel.class);
+            Expression<Collection<UserModel>> courseUsers = course.get("users");
+            return criteriaBuilder.and(
+                    criteriaBuilder.equal(course.get("courseId"), courseId), criteriaBuilder.isMember(user, courseUsers)
+            );
+        };
+    }
+
+    public static Specification<CourseModel> courseUserId(final UUID userId) {
+        return (root, query, criteriaBuilder) -> {
+            query.distinct(true);
+            Root<CourseModel> course = root;
+            Root<UserModel> user = query.from(UserModel.class);
+            Expression<Collection<CourseModel>> userCourses = course.get("courses");
+            return criteriaBuilder.and(
+                    criteriaBuilder.equal(user.get("userId"), userId), criteriaBuilder.isMember(course, userCourses)
             );
         };
     }

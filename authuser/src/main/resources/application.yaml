@@ -40,3 +40,6 @@ ead:
   api:
     url:
       course: 'http://ead-course-service'
+  broker:
+    exchange:
+      userEvent: ead.userevent

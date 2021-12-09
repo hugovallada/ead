@@ -48,7 +48,7 @@ public class AuthenticationController {
         userModel.setUserStatus(UserStatus.ACTIVE);
         userModel.setUserType(UserType.STUDENT);
 
-        userService.save(userModel);
+        userModel = userService.saveUser(userModel);
 
         userModel.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class).getOneUser(userModel.getUserId())).withSelfRel());
 

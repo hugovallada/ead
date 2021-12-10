@@ -72,7 +72,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
 
-        userService.delete(userId);
+        userService.deleteUser(userModelOptional.get());
 
         log.info("User {} deleted", userId);
         return ResponseEntity.status(HttpStatus.OK).body("User deleted successfully");
@@ -95,7 +95,7 @@ public class UserController {
         userModel.setPhoneNumber(userDto.getPhoneNumber());
         userModel.setCpf(userDto.getCpf());
 
-        userService.save(userModel);
+        userService.saveUser(userModel);
 
         log.debug("User updated");
         log.info("User {} updated", userId);
@@ -122,7 +122,7 @@ public class UserController {
         }
 
         userModel.setPassword(userDto.getPassword());
-        userService.save(userModel);
+        userService.updatePassword(userModel);
 
         log.info("User {} has updated its password", userId);
         return ResponseEntity.status(HttpStatus.OK).body("Password updated successfully");
@@ -143,11 +143,10 @@ public class UserController {
         var userModel = userModelOptional.get();
         userModel.setImageUrl(userDto.getImageUrl());
 
-        userService.save(userModel);
+        userService.updateUser(userModel);
 
 
         return ResponseEntity.status(HttpStatus.OK).body(userModel);
     }
-
 
 }

@@ -2,7 +2,6 @@ package com.ead.course.consumers;
 
 import com.ead.course.dtos.UserEventDto;
 import com.ead.course.enums.ActionType;
-import com.ead.course.repositories.UserRepository;
 import com.ead.course.services.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -29,18 +28,15 @@ public class UserConsumer {
         var userModel = userEventDto.convertToUserModel();
 
         switch (ActionType.valueOf(userEventDto.getActionType())) {
-            case CREATE: {
+            case CREATE:
+
+            case UPDATE: {
                 userService.save(userModel);
                 break;
             }
 
             case DELETE: {
-                log.info("Deleting...");
-                break;
-            }
-
-            case UPDATE: {
-                log.info("Updating...");
+                userService.delete(userModel.getId());
                 break;
             }
         }

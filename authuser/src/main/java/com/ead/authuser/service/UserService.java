@@ -26,4 +26,10 @@ public interface UserService {
     boolean existsByEmail(String email);
 
     UserModel saveUser(UserModel userModel);
+
+    UserModel updateUser(UserModel userModel);
+
+    UserModel updatePassword(UserModel userModel);
+
+    void deleteUser(UserModel userModel);
 }

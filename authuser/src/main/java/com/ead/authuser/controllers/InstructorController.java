@@ -30,7 +30,7 @@ public class InstructorController {
 
         var user = instructorOptional.get();
         user.setUserType(UserType.INSTRUCTOR);
-        userService.save(user);
+        userService.updateUser(user);
         return ResponseEntity.status(202).body(user);
     }
 

@@ -47,8 +47,6 @@ public class CourseServiceImpl implements CourseService {
     @Override
     @Transactional
     public void delete(CourseModel courseModel) {
-        boolean deleteCourseUserInAuthUser = false;
-
         var modules = moduleRepository.findAllByCourseCourseId(courseModel.getCourseId());
 
         if (!modules.isEmpty()) {
@@ -62,6 +60,7 @@ public class CourseServiceImpl implements CourseService {
             moduleRepository.deleteAll(modules);
         }
 
+        courseRepository.deleteCourseByCourse(courseModel.getCourseId());
         courseRepository.delete(courseModel);
     }
 

@@ -1,6 +1,7 @@
 package com.ead.course.controllers;
 
 import com.ead.course.dtos.SubscriptionDto;
+import com.ead.course.enums.UserStatus;
 import com.ead.course.services.CourseService;
 import com.ead.course.services.UserService;
 import com.ead.course.specifications.SpecificationTemplate;
@@ -8,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,6 +49,22 @@ public class CourseUserController {
             return ResponseEntity.status(404).body("Course not found!");
         }
 
-        return ResponseEntity.status(201).body(""); // TODO: Verificações State Transfer
+        if (courseService.existsByCourseAndUser(courseId, subscriptionDto.getUserId())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: subscription already exists");
+        }
+
+        var userModelOptional = userService.findById(subscriptionDto.getUserId());
+
+        if(userModelOptional.isEmpty()) {
+            return ResponseEntity.status(404).body("User not found");
+        }
+
+        if (userModelOptional.get().getUserStatus().equals(UserStatus.BLOCKED.toString())) {
+            return ResponseEntity.status(422).body("User us blocked");
+        }
+
+        courseService.saveSubscriptionUserInCourse(course.get().getCourseId(), userModelOptional.get().getId());
+
+        return ResponseEntity.status(201).body("Subscription created.");
     }
 }

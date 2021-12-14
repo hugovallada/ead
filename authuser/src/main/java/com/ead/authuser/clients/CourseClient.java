@@ -3,6 +3,7 @@ package com.ead.authuser.clients;
 import com.ead.authuser.dtos.CourseDto;
 import com.ead.authuser.dtos.ResponsePageDto;
 import com.ead.authuser.service.UtilsService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -36,7 +37,9 @@ public class CourseClient {
     @Value("${ead.api.url.course}")
     String REQUEST_URI_COURSE;
 
-    @Retry(name = "retryInstance", fallbackMethod = "retryFallback")
+    // Retry pode ser perigoso, pois vai aumentar o número de requests
+    // @Retry(name = "retryInstance", fallbackMethod = "retryFallback")
+    @CircuitBreaker(name = "circuitbreakerInstance", fallbackMethod = "retryFallback")
     public Page<CourseDto> getAllCoursesById(UUID userId, Pageable pageable) {
         List<CourseDto> searchResult = null;
 

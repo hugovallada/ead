@@ -3,6 +3,7 @@ package com.ead.authuser.clients;
 import com.ead.authuser.dtos.CourseDto;
 import com.ead.authuser.dtos.ResponsePageDto;
 import com.ead.authuser.service.UtilsService;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.log4j.Log4j2;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,6 +36,7 @@ public class CourseClient {
     @Value("${ead.api.url.course}")
     String REQUEST_URI_COURSE;
 
+    @Retry(name = "retryInstance", fallbackMethod = "retryFallback")
     public Page<CourseDto> getAllCoursesById(UUID userId, Pageable pageable) {
         List<CourseDto> searchResult = null;
 
@@ -53,5 +56,11 @@ public class CourseClient {
         }
 
         return new PageImpl<>(searchResult);
+    }
+
+    // Deve ter os mesmos parametros + uma exceção e mesmo tipo de retorno
+    public Page<CourseDto> retryFallback(UUID userId, Pageable pageable, Throwable throwable) {
+        log.error("Retry Fallback, cause {}", throwable.toString());
+        return new PageImpl<>(new ArrayList<>());
     }
 }

@@ -6,6 +6,12 @@ server:
 spring:
   application:
     name: ead-course-service
+  config:
+    import: 'optional:configserver:' # se config server estiver indisponível, ele considera as outras configurações, se não, usa as do config
+    cloud:
+      config:
+        discovery:
+          serviceId: ead-config-server
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/ead-course}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}

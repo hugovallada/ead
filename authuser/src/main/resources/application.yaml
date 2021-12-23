@@ -12,6 +12,9 @@ spring:
     config:
       discovery:
         serviceId: ead-config-server
+      username: configserver
+      password: 'ead123cs'
+
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/ead-authuser}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}

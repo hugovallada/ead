@@ -55,7 +55,7 @@ public class CourseUserController {
 
         var userModelOptional = userService.findById(subscriptionDto.getUserId());
 
-        if(userModelOptional.isEmpty()) {
+        if (userModelOptional.isEmpty()) {
             return ResponseEntity.status(404).body("User not found");
         }
 
@@ -63,7 +63,7 @@ public class CourseUserController {
             return ResponseEntity.status(422).body("User us blocked");
         }
 
-        courseService.saveSubscriptionUserInCourse(course.get().getCourseId(), userModelOptional.get().getId());
+        courseService.saveSubscriptionUserInCourseAndSendNotification(course.get(), userModelOptional.get());
 
         return ResponseEntity.status(201).body("Subscription created.");
     }

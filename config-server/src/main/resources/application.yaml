@@ -15,6 +15,9 @@ ead:
   serviceRegistry:
     username: serviceregistry
     password: 'ead123sr'
+  configServer:
+    username: configserver
+    password: 'ead123cs'
 
 eureka:
   client:

@@ -5,8 +5,15 @@ spring:
   application:
     name: ead-service-registry
 
+ead:
+  serviceRegistry:
+    username: serviceregistry
+    password: 'ead123sr'
+
 eureka:
   client:
-    registerWithEureka: false # Não se auto registra como cliente
-    fetchRegistry: false # Não busca um registro no Eureka
+    registerWithEureka: false # NÃ£o se auto registra como cliente
+    fetchRegistry: false # NÃ£o busca um registro no Eureka
     renewalPercentThreshold: 0.85 # Remove o emergency
+    service-url:
+      defaultZone: 'http://${ead.serviceRegistry.username}:${ead.serviceRegistry.password}@localhost:8761/eureka'

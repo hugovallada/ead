@@ -1,8 +1,6 @@
 package com.ead.authuser.configs.security;
 
-import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,6 +30,28 @@ public class JwtProvider {
                 .setExpiration(new Date(new Date().getTime() + jwtExpirationMs))
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
+    }
+
+    public String getUsernameJwt(String token) {
+        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
+    }
+
+    public boolean validateJwt(String token) {
+        try {
+            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
+            return true;
+        } catch (SignatureException e) {
+            log.error("Invalid JWT Signature: " + e.getMessage());
+        } catch (MalformedJwtException e) {
+            log.error("Invalid JWT Token");
+        } catch (ExpiredJwtException e) {
+            log.error("Token expired");
+        } catch (UnsupportedJwtException e) {
+            log.error("JWT is unsupported");
+        } catch (IllegalArgumentException e) {
+            log.error("JWT clains is empty");
+        }
+        return false;
     }
 
 

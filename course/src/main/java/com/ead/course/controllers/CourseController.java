@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +29,7 @@ public class CourseController {
 
     private final CourseValidator courseValidator;
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @PostMapping
     public ResponseEntity<Object> saveCourse(@RequestBody CourseDto courseDto, Errors errors) {
         courseValidator.validate(courseDto, errors);
@@ -41,6 +43,7 @@ public class CourseController {
         return ResponseEntity.status(HttpStatus.CREATED).body(courseModel);
     }
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @DeleteMapping("/{courseId}")
     public ResponseEntity<Object> deleteCourse(@PathVariable("courseId") UUID courseId) {
         var course = courseService.findById(courseId);
@@ -51,6 +54,7 @@ public class CourseController {
         return ResponseEntity.ok("Deleted");
     }
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @PutMapping("/{courseId}")
     public ResponseEntity<Object> updateCourse(@PathVariable("courseId") UUID courseId, @RequestBody @Valid CourseDto courseDto) {
         var course = courseService.findById(courseId);
@@ -65,6 +69,7 @@ public class CourseController {
         return ResponseEntity.ok(courseModel);
     }
 
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping
     public ResponseEntity<Page<CourseModel>> getAll(
             SpecificationTemplate.CourseSpec spec,
@@ -79,6 +84,7 @@ public class CourseController {
         return ResponseEntity.ok(courseService.findAll(pageable, spec));
     }
 
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping("/{courseId}")
     public ResponseEntity<Object> getOne(@PathVariable UUID courseId) {
         var course = courseService.findById(courseId);

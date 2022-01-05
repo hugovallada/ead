@@ -1,6 +1,7 @@
-package com.ead.authuser.configs.security;
+package com.ead.course.configs.security;
 
-import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,30 +16,31 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.UUID;
 
-@Log4j2
+
 public class AuthenticationJwtFilter extends OncePerRequestFilter {
 
     @Autowired
     private JwtProvider jwtProvider;
 
-    @Autowired
-    private UserDetailsServiceImpl userDetailsService;
+    private final Logger log = LogManager.getLogger(this.getClass().getName());
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             var jwtStr = getToken(request);
 
-            if(jwtStr != null && jwtProvider.validateJwt(jwtStr)) {
+            if (jwtStr != null && jwtProvider.validateJwt(jwtStr)) {
                 var userId = jwtProvider.getSubjectJwt(jwtStr);
-                var userDetails = userDetailsService.loadUserByUserId(UUID.fromString(userId));
+                var rolesStr = jwtProvider.getClaimNameJwt(jwtStr, "roles");
+                var userDetails = UserDetailsImpl.build(UUID.fromString(userId), rolesStr);
                 var authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities()
                 );
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.error("Cannot set User Authentication: {}", e);
         }
 
@@ -47,7 +49,7 @@ public class AuthenticationJwtFilter extends OncePerRequestFilter {
 
     private String getToken(HttpServletRequest request) {
         String headerAuth = request.getHeader("Authorization");
-        if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")){
+        if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
             return headerAuth.substring(7, headerAuth.length());
         }
         return null;

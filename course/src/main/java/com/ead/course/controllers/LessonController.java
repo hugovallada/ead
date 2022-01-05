@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -27,6 +28,7 @@ public class LessonController {
 
     private final ModuleService moduleService;
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @PostMapping
     public ResponseEntity<Object> createLesson(
             @PathVariable UUID moduleId,
@@ -45,6 +47,7 @@ public class LessonController {
         return ResponseEntity.notFound().build();
     }
 
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping
     public ResponseEntity<Page<LessonModel>> getAll(
             SpecificationTemplate.LessonSpec spec,
@@ -56,6 +59,7 @@ public class LessonController {
         ));
     }
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @DeleteMapping("/{lessonId}")
     public ResponseEntity<Object> deleteOne(
             @PathVariable UUID moduleId,
@@ -71,6 +75,7 @@ public class LessonController {
         return ResponseEntity.notFound().build();
     }
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @PutMapping("/{lessonId}")
     public ResponseEntity<Object> updateLesson(
             @PathVariable UUID moduleId,
@@ -90,6 +95,7 @@ public class LessonController {
         return ResponseEntity.notFound().build();
     }
 
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping("/{lessonId}")
     public ResponseEntity<Object> getLesson(
             @PathVariable UUID moduleId,

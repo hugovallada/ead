@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -26,6 +27,7 @@ public class ModuleController {
     private final ModuleService moduleService;
     private final CourseService courseService;
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @PostMapping
     public ResponseEntity<Object> saveModule(
             @PathVariable("courseId") UUID courseId,
@@ -44,6 +46,7 @@ public class ModuleController {
         return ResponseEntity.notFound().build();
     }
 
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping
     public ResponseEntity<Page<ModuleModel>> getAllModules(
             SpecificationTemplate.ModuleSpec spec,
@@ -54,6 +57,7 @@ public class ModuleController {
         );
     }
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @DeleteMapping("/{moduleId}")
     public ResponseEntity<Object> deleteModule(
             @PathVariable("courseId") UUID courseId,
@@ -70,6 +74,7 @@ public class ModuleController {
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping("/{moduleId}")
     public ResponseEntity<Object> getOne(
             @PathVariable("courseId") UUID courseId,
@@ -81,6 +86,7 @@ public class ModuleController {
         return ResponseEntity.ok(module.get());
     }
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @PutMapping("/{moduleId}")
     public ResponseEntity<Object> updateOne(
             @PathVariable("courseId") UUID courseId,

@@ -14,6 +14,8 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -40,10 +42,13 @@ public class CourseClient {
     // Retry pode ser perigoso, pois vai aumentar o número de requests
     // @Retry(name = "retryInstance", fallbackMethod = "retryFallback")
     @CircuitBreaker(name = "circuitbreakerInstance", fallbackMethod = "retryFallback")
-    public Page<CourseDto> getAllCoursesById(UUID userId, Pageable pageable) {
+    public Page<CourseDto> getAllCoursesById(UUID userId, Pageable pageable, String token) {
         List<CourseDto> searchResult = null;
 
         String url = REQUEST_URI_COURSE + utilsService.createUrl(userId, pageable);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.set("Authorization", token);
+        HttpEntity<String> requestEntity = new HttpEntity<>("parameters", httpHeaders);
 
         log.info("Request URL: {}", url);
 
@@ -51,7 +56,7 @@ public class CourseClient {
             var responseType = new ParameterizedTypeReference<ResponsePageDto<CourseDto>>() {
             };
 
-            ResponseEntity<ResponsePageDto<CourseDto>> result = restTemplate.exchange(url, HttpMethod.GET, null, responseType);
+            ResponseEntity<ResponsePageDto<CourseDto>> result = restTemplate.exchange(url, HttpMethod.GET, requestEntity, responseType);
             searchResult = result.getBody().getContent();
 
         } catch (HttpStatusCodeException ex) {

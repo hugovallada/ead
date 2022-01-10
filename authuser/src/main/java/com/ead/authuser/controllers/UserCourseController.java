@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -24,16 +25,18 @@ public class UserCourseController {
 
     private final UserService userService;
 
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping
     public ResponseEntity<Page<CourseDto>> getAllCoursesByUser(
             @PageableDefault Pageable pageable,
-            @PathVariable UUID userId
+            @PathVariable UUID userId,
+            @RequestHeader("Authorization") String token
     ) {
         var userModelOptional = userService.findOne(userId);
         if (userModelOptional.isEmpty())
             return ResponseEntity.notFound().build();
 
-        return ResponseEntity.ok(courseClient.getAllCoursesById(userId, pageable));
+        return ResponseEntity.ok(courseClient.getAllCoursesById(userId, pageable, token));
     }
 
 }
